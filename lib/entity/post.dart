@@ -30,8 +30,8 @@ import 'type.dart';
 class Post extends BaseEntity {
   @PrimaryKey(autoGenerate: true)
   final int? id;
-  final String title;
-  final String? description;
+  late final String title;
+  late final String? description;
   final int? year;
   final int timestamp;
   final bool? inStock;

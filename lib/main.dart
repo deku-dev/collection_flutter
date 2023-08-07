@@ -4,7 +4,7 @@ import 'package:flutter_app/pages/category_filter.dart';
 import 'package:flutter_app/pages/create_post_form.dart';
 import 'package:flutter_app/pages/favorites.dart';
 import 'package:flutter_app/pages/filter_form.dart';
-import 'package:flutter_app/pages/main.dart';
+import 'package:flutter_app/pages/home.dart';
 import 'package:flutter_app/pages/search.dart';
 import 'package:flutter_app/pages/settings.dart';
 import 'package:get_it/get_it.dart';
@@ -21,23 +21,21 @@ Future<void> main() async {
       () async => await AppDatabase.getInstance()
   );
 
-
+  await getIt.allReady();
 
   getIt<AppDatabase>().seriesDao.findAllSeriesId();
-  const count = 100;
+  const count = 10;
   getIt<AppDatabase>().countryDao.insertFake(count);
   getIt<AppDatabase>().typeDao.insertFake(count);
   getIt<AppDatabase>().categoryDao.insertFake(count);
   getIt<AppDatabase>().postDao.insertFake(count);
   getIt<AppDatabase>().seriesDao.insertFake(count);
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,29 +47,13 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => MainPage(),
-        '/category-filter': (context) => CategoryFilterPage(),
-        '/filter-form': (context) => FilterFormPage(),
-        '/create-post-form': (context) => CreatePostFormPage(),
-        '/favorites': (context) => FavoritesPage(),
-        '/search': (context) => SearchPage(),
-        '/settings': (context) => SettingsPage(),
-      },
-      builder: (BuildContext context, Widget? child) {
-        return Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            title: const Text('Your App Name'),
-            leading: IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                _scaffoldKey.currentState?.openDrawer();
-              },
-            ),
-          ),
-          drawer: Sidebar(),
-          body: child,
-        );
+        '/': (context) => Home(),
+        '/category-filter': (context) => const CategoryFilterPage(),
+        '/filter-form': (context) => const FilterFormPage(),
+        '/create-post-form': (context) => const CreatePostFormPage(),
+        '/favorites': (context) => const FavoritesPage(),
+        '/search': (context) => const SearchPage(),
+        '/settings': (context) => const SettingsPage(),
       },
     );
   }

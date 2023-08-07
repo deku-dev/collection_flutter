@@ -1,17 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/pages/post.dart';
 
+import '../components/sidebar.dart';
 import '../database/database.dart';
 import '../entity/post.dart';
+import 'create_post_form.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+
+class Home extends StatelessWidget {
+  Home({super.key});
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+        ),
+      ),
+      drawer: const Sidebar(),
+      body: const HomePage(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to the form screen when the button is tapped
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const CreatePostFormPage()));
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
   TeasersWidgetState createState() => TeasersWidgetState();
 }
 
-class TeasersWidgetState extends State<MainPage> {
+class TeasersWidgetState extends State<HomePage> {
   List<Post> _teaserPosts = [];
 
   @override
