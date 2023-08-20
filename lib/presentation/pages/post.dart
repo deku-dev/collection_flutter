@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-
-import '../entity/post.dart';
-import '../entity/category.dart' as category;
+import 'package:flutter_app/domain/entities/category_entity.dart';
+import 'package:flutter_app/domain/entities/post_entity.dart';
 
 class PostPage extends StatelessWidget {
-  final Post post;
+  final PostEntity post;
 
   const PostPage({Key? key, required this.post}) : super(key: key);
 
@@ -75,9 +74,9 @@ class PostPage extends StatelessWidget {
                                 ),
                               ),
                               TableCell(
-                                child: FutureBuilder<category.Category?>(
+                                child: FutureBuilder<CategoryEntity?>(
                                   future: post.getCategory(),
-                                  builder: (BuildContext context, AsyncSnapshot<category.Category?> snapshot) {
+                                  builder: (BuildContext context, AsyncSnapshot<CategoryEntity?> snapshot) {
                                     if (snapshot.connectionState == ConnectionState.waiting) {
                                       return const CircularProgressIndicator();
                                     } else if (snapshot.hasError) {

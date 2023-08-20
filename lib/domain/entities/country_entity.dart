@@ -1,11 +1,11 @@
 import 'package:floor/floor.dart';
 
 @entity
-class Country {
+class CountryEntity {
   @PrimaryKey(autoGenerate: true)
   final int? id;
 
   final String name;
 
-  Country(this.id, this.name);
+  CountryEntity(this.id, this.name);
 }

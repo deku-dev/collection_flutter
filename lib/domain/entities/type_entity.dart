@@ -1,11 +1,11 @@
 import 'package:floor/floor.dart';
 
 @entity
-class Category {
+class TypeEntity {
   @PrimaryKey(autoGenerate: true)
   final int? id;
 
   final String name;
 
-  Category(this.id, this.name);
+  TypeEntity(this.id, this.name);
 }

@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/domain/entities/category_entity.dart';
 
-import '../database/database.dart';
-import '../entity/category.dart' as entity;
+import '../../data/database/database.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<entity.Category>>(
+    return FutureBuilder<List<CategoryEntity>>(
       future: _fetchTeasers(), // Call the function to fetch the list of posts (categories)
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -46,7 +46,7 @@ class Sidebar extends StatelessWidget {
   }
 
   // Function to fetch the list of posts (teasers)
-  Future<List<entity.Category>> _fetchTeasers() async {
+  Future<List<CategoryEntity>> _fetchTeasers() async {
     AppDatabase database = await AppDatabase.getInstance();
     return await database.categoryDao.findAllCategories();
   }

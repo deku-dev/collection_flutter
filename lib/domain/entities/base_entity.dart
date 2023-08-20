@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 
-import '../database/database.dart';
+import '../../data/database/database.dart';
 
 class BaseEntity {
 

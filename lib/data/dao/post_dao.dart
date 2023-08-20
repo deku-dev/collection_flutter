@@ -1,25 +1,25 @@
 import 'package:faker/faker.dart';
 import 'package:floor/floor.dart';
-import 'package:flutter_app/entity/post.dart';
+import 'package:flutter_app/domain/entities/post_entity.dart';
 
 import '../database/database.dart';
 
 @dao
 abstract class PostDao {
-  @Query('SELECT * FROM Post')
-  Future<List<Post>> findAllPosts();
+  @Query('SELECT * FROM PostEntity')
+  Future<List<PostEntity>> findAllPosts();
 
-  @Query('SELECT * FROM Post WHERE id = :id')
-  Future<Post?> findPostById(int id);
+  @Query('SELECT * FROM PostEntity WHERE id = :id')
+  Future<PostEntity?> findPostById(int id);
 
   @insert
-  Future<void> insertPost(Post post);
+  Future<void> insertPost(PostEntity post);
 
   @update
-  Future<void> updatePost(Post post);
+  Future<void> updatePost(PostEntity post);
 
   @delete
-  Future<void> deletePost(Post post);
+  Future<void> deletePost(PostEntity post);
 
   Future<void> insertFake(int count) async {
     AppDatabase database = await AppDatabase.getInstance();
@@ -30,7 +30,7 @@ abstract class PostDao {
     final faker = Faker();
     final DateTime currentDate = DateTime.now();
     for (var i = 0; i < count; i++) {
-      final post = Post(
+      final post = PostEntity(
           title: faker.job.title(),
           description: faker.lorem.sentence(),
           images: faker.image.image(),

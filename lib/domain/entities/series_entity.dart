@@ -1,11 +1,11 @@
 import 'package:floor/floor.dart';
 
 @entity
-class Series {
+class SeriesEntity {
   @PrimaryKey(autoGenerate: true)
   final int? id;
 
   final String name;
 
-  Series(this.id, this.name);
+  SeriesEntity(this.id, this.name);
 }

@@ -2,22 +2,22 @@
 import 'dart:async';
 
 import 'package:floor/floor.dart';
-import 'package:flutter_app/dao/series_dao.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
+import '../../domain/entities/category_entity.dart';
+import '../../domain/entities/country_entity.dart';
+import '../../domain/entities/post_entity.dart';
+import '../../domain/entities/series_entity.dart';
+import '../../domain/entities/type_entity.dart';
 import '../dao/category_dao.dart';
 import '../dao/country_dao.dart';
 import '../dao/post_dao.dart';
+import '../dao/series_dao.dart';
 import '../dao/type_dao.dart';
-import '../entity/category.dart';
-import '../entity/country.dart';
-import '../entity/post.dart';
-import '../entity/series.dart';
-import '../entity/type.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
-@Database(version: 1, entities: [Post, Category, Country, Type, Series])
+@Database(version: 1, entities: [PostEntity, CategoryEntity, CountryEntity, TypeEntity, SeriesEntity])
 abstract class AppDatabase extends FloorDatabase {
   PostDao get postDao;
   CategoryDao get categoryDao;

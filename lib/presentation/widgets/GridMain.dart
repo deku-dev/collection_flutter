@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../components/post_card.dart';
+import 'package:flutter_app/presentation/widgets/post_card.dart';
 
 class GridMain extends StatelessWidget {
 

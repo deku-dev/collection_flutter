@@ -1,33 +1,32 @@
 import 'dart:convert';
 
 import 'package:floor/floor.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_app/entity/base_entity.dart';
+import 'package:flutter_app/domain/entities/category_entity.dart';
+import 'package:flutter_app/domain/entities/country_entity.dart';
+import 'package:flutter_app/domain/entities/series_entity.dart';
+import 'package:flutter_app/domain/entities/type_entity.dart';
 
-import 'category.dart' as category;
-import 'country.dart';
-import 'series.dart';
-import 'type.dart';
+import 'base_entity.dart';
 
 @Entity(
   foreignKeys: [
     ForeignKey(
       childColumns: ['type_id'],
       parentColumns: ['id'],
-      entity: Type,
+      entity: TypeEntity,
     ),
     ForeignKey(
       childColumns: ['category_id'],
       parentColumns: ['id'],
-      entity: Category,
+      entity: CategoryEntity,
     ),
     ForeignKey(
-        childColumns: ['series_id'], parentColumns: ['id'], entity: Series),
+        childColumns: ['series_id'], parentColumns: ['id'], entity: SeriesEntity),
     ForeignKey(
-        childColumns: ['country_id'], parentColumns: ['id'], entity: Country),
+        childColumns: ['country_id'], parentColumns: ['id'], entity: CountryEntity),
   ],
 )
-class Post extends BaseEntity {
+class PostEntity extends BaseEntity {
   @PrimaryKey(autoGenerate: true)
   final int? id;
   late final String title;
@@ -51,7 +50,7 @@ class Post extends BaseEntity {
   @ColumnInfo(name: 'type_id')
   final int typeId; // Foreign key field
 
-  Post({
+  PostEntity({
       this.id,
       required this.title,
       this.description,
@@ -68,19 +67,19 @@ class Post extends BaseEntity {
     return json.decode(images!).cast<String>();
   }
 
-  Future<Type?> getType() async {
+  Future<TypeEntity?> getType() async {
     return database.typeDao.findTypeById(typeId);
   }
 
-  Future<Series?> getSeries() async {
+  Future<SeriesEntity?> getSeries() async {
     return await database.seriesDao.findSeriesById(seriesId);
   }
 
-  Future<category.Category?> getCategory() async {
+  Future<CategoryEntity?> getCategory() async {
     return await database.categoryDao.findCategoryById(categoryId);
   }
 
-  Future<Country?> getCountry() async {
+  Future<CountryEntity?> getCountry() async {
     return await database.countryDao.findCountryById(countryId);
   }
 }
