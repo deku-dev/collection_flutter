@@ -93,15 +93,15 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Post` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `description` TEXT, `year` INTEGER, `timestamp` INTEGER NOT NULL, `inStock` INTEGER, `image_urls` TEXT, `country_id` INTEGER NOT NULL, `series_id` INTEGER NOT NULL, `category_id` INTEGER NOT NULL, `type_id` INTEGER NOT NULL, FOREIGN KEY (`type_id`) REFERENCES `Type` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`category_id`) REFERENCES `Category` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`series_id`) REFERENCES `Series` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`country_id`) REFERENCES `Country` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
+            'CREATE TABLE IF NOT EXISTS `PostEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `description` TEXT, `year` INTEGER, `timestamp` INTEGER NOT NULL, `inStock` INTEGER, `image_urls` TEXT, `country_id` INTEGER NOT NULL, `series_id` INTEGER NOT NULL, `category_id` INTEGER NOT NULL, `type_id` INTEGER NOT NULL, FOREIGN KEY (`type_id`) REFERENCES `TypeEntity` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`category_id`) REFERENCES `CategoryEntity` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`series_id`) REFERENCES `SeriesEntity` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION, FOREIGN KEY (`country_id`) REFERENCES `CountryEntity` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Category` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `CategoryEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Country` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `CountryEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Type` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `TypeEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Series` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `SeriesEntity` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -140,10 +140,10 @@ class _$PostDao extends PostDao {
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _postInsertionAdapter = InsertionAdapter(
+        _postEntityInsertionAdapter = InsertionAdapter(
             database,
-            'Post',
-            (Post item) => <String, Object?>{
+            'PostEntity',
+            (PostEntity item) => <String, Object?>{
                   'id': item.id,
                   'title': item.title,
                   'description': item.description,
@@ -157,11 +157,11 @@ class _$PostDao extends PostDao {
                   'category_id': item.categoryId,
                   'type_id': item.typeId
                 }),
-        _postUpdateAdapter = UpdateAdapter(
+        _postEntityUpdateAdapter = UpdateAdapter(
             database,
-            'Post',
+            'PostEntity',
             ['id'],
-            (Post item) => <String, Object?>{
+            (PostEntity item) => <String, Object?>{
                   'id': item.id,
                   'title': item.title,
                   'description': item.description,
@@ -175,11 +175,11 @@ class _$PostDao extends PostDao {
                   'category_id': item.categoryId,
                   'type_id': item.typeId
                 }),
-        _postDeletionAdapter = DeletionAdapter(
+        _postEntityDeletionAdapter = DeletionAdapter(
             database,
-            'Post',
+            'PostEntity',
             ['id'],
-            (Post item) => <String, Object?>{
+            (PostEntity item) => <String, Object?>{
                   'id': item.id,
                   'title': item.title,
                   'description': item.description,
@@ -200,16 +200,16 @@ class _$PostDao extends PostDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<Post> _postInsertionAdapter;
+  final InsertionAdapter<PostEntity> _postEntityInsertionAdapter;
 
-  final UpdateAdapter<Post> _postUpdateAdapter;
+  final UpdateAdapter<PostEntity> _postEntityUpdateAdapter;
 
-  final DeletionAdapter<Post> _postDeletionAdapter;
+  final DeletionAdapter<PostEntity> _postEntityDeletionAdapter;
 
   @override
-  Future<List<Post>> findAllPosts() async {
-    return _queryAdapter.queryList('SELECT * FROM Post',
-        mapper: (Map<String, Object?> row) => Post(
+  Future<List<PostEntity>> findAllPosts() async {
+    return _queryAdapter.queryList('SELECT * FROM PostEntity',
+        mapper: (Map<String, Object?> row) => PostEntity(
             id: row['id'] as int?,
             title: row['title'] as String,
             description: row['description'] as String?,
@@ -225,9 +225,9 @@ class _$PostDao extends PostDao {
   }
 
   @override
-  Future<Post?> findPostById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Post WHERE id = ?1',
-        mapper: (Map<String, Object?> row) => Post(
+  Future<PostEntity?> findPostById(int id) async {
+    return _queryAdapter.query('SELECT * FROM PostEntity WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => PostEntity(
             id: row['id'] as int?,
             title: row['title'] as String,
             description: row['description'] as String?,
@@ -244,18 +244,18 @@ class _$PostDao extends PostDao {
   }
 
   @override
-  Future<void> insertPost(Post post) async {
-    await _postInsertionAdapter.insert(post, OnConflictStrategy.abort);
+  Future<void> insertPost(PostEntity post) async {
+    await _postEntityInsertionAdapter.insert(post, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> updatePost(Post post) async {
-    await _postUpdateAdapter.update(post, OnConflictStrategy.abort);
+  Future<void> updatePost(PostEntity post) async {
+    await _postEntityUpdateAdapter.update(post, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deletePost(Post post) async {
-    await _postDeletionAdapter.delete(post);
+  Future<void> deletePost(PostEntity post) async {
+    await _postEntityDeletionAdapter.delete(post);
   }
 }
 
@@ -264,22 +264,22 @@ class _$CategoryDao extends CategoryDao {
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _categoryInsertionAdapter = InsertionAdapter(
+        _categoryEntityInsertionAdapter = InsertionAdapter(
             database,
-            'Category',
-            (Category item) =>
+            'CategoryEntity',
+            (CategoryEntity item) =>
                 <String, Object?>{'id': item.id, 'name': item.name}),
-        _categoryUpdateAdapter = UpdateAdapter(
+        _categoryEntityUpdateAdapter = UpdateAdapter(
             database,
-            'Category',
+            'CategoryEntity',
             ['id'],
-            (Category item) =>
+            (CategoryEntity item) =>
                 <String, Object?>{'id': item.id, 'name': item.name}),
-        _categoryDeletionAdapter = DeletionAdapter(
+        _categoryEntityDeletionAdapter = DeletionAdapter(
             database,
-            'Category',
+            'CategoryEntity',
             ['id'],
-            (Category item) =>
+            (CategoryEntity item) =>
                 <String, Object?>{'id': item.id, 'name': item.name});
 
   final sqflite.DatabaseExecutor database;
@@ -288,46 +288,48 @@ class _$CategoryDao extends CategoryDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<Category> _categoryInsertionAdapter;
+  final InsertionAdapter<CategoryEntity> _categoryEntityInsertionAdapter;
 
-  final UpdateAdapter<Category> _categoryUpdateAdapter;
+  final UpdateAdapter<CategoryEntity> _categoryEntityUpdateAdapter;
 
-  final DeletionAdapter<Category> _categoryDeletionAdapter;
+  final DeletionAdapter<CategoryEntity> _categoryEntityDeletionAdapter;
 
   @override
-  Future<List<Category>> findAllCategories() async {
-    return _queryAdapter.queryList('SELECT * FROM Category',
+  Future<List<CategoryEntity>> findAllCategories() async {
+    return _queryAdapter.queryList('SELECT * FROM CategoryEntity',
         mapper: (Map<String, Object?> row) =>
-            Category(row['id'] as int?, row['name'] as String));
+            CategoryEntity(row['id'] as int?, row['name'] as String));
   }
 
   @override
   Future<List<int>> findAllCategoriesId() async {
-    return _queryAdapter.queryList('SELECT id FROM Category',
+    return _queryAdapter.queryList('SELECT id FROM CategoryEntity',
         mapper: (Map<String, Object?> row) => row.values.first as int);
   }
 
   @override
-  Future<Category?> findCategoryById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Category WHERE id = ?1',
+  Future<CategoryEntity?> findCategoryById(int id) async {
+    return _queryAdapter.query('SELECT * FROM CategoryEntity WHERE id = ?1',
         mapper: (Map<String, Object?> row) =>
-            Category(row['id'] as int?, row['name'] as String),
+            CategoryEntity(row['id'] as int?, row['name'] as String),
         arguments: [id]);
   }
 
   @override
-  Future<void> insertCategory(Category category) async {
-    await _categoryInsertionAdapter.insert(category, OnConflictStrategy.abort);
+  Future<void> insertCategory(CategoryEntity category) async {
+    await _categoryEntityInsertionAdapter.insert(
+        category, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> updateCategory(Category category) async {
-    await _categoryUpdateAdapter.update(category, OnConflictStrategy.abort);
+  Future<void> updateCategory(CategoryEntity category) async {
+    await _categoryEntityUpdateAdapter.update(
+        category, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deleteCategory(Category category) async {
-    await _categoryDeletionAdapter.delete(category);
+  Future<void> deleteCategory(CategoryEntity category) async {
+    await _categoryEntityDeletionAdapter.delete(category);
   }
 }
 
@@ -336,22 +338,22 @@ class _$CountryDao extends CountryDao {
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _countryInsertionAdapter = InsertionAdapter(
+        _countryEntityInsertionAdapter = InsertionAdapter(
             database,
-            'Country',
-            (Country item) =>
+            'CountryEntity',
+            (CountryEntity item) =>
                 <String, Object?>{'id': item.id, 'name': item.name}),
-        _countryUpdateAdapter = UpdateAdapter(
+        _countryEntityUpdateAdapter = UpdateAdapter(
             database,
-            'Country',
+            'CountryEntity',
             ['id'],
-            (Country item) =>
+            (CountryEntity item) =>
                 <String, Object?>{'id': item.id, 'name': item.name}),
-        _countryDeletionAdapter = DeletionAdapter(
+        _countryEntityDeletionAdapter = DeletionAdapter(
             database,
-            'Country',
+            'CountryEntity',
             ['id'],
-            (Country item) =>
+            (CountryEntity item) =>
                 <String, Object?>{'id': item.id, 'name': item.name});
 
   final sqflite.DatabaseExecutor database;
@@ -360,46 +362,46 @@ class _$CountryDao extends CountryDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<Country> _countryInsertionAdapter;
+  final InsertionAdapter<CountryEntity> _countryEntityInsertionAdapter;
 
-  final UpdateAdapter<Country> _countryUpdateAdapter;
+  final UpdateAdapter<CountryEntity> _countryEntityUpdateAdapter;
 
-  final DeletionAdapter<Country> _countryDeletionAdapter;
+  final DeletionAdapter<CountryEntity> _countryEntityDeletionAdapter;
 
   @override
-  Future<List<Country>> findAllCountries() async {
-    return _queryAdapter.queryList('SELECT * FROM Country',
+  Future<List<CountryEntity>> findAllCountries() async {
+    return _queryAdapter.queryList('SELECT * FROM CountryEntity',
         mapper: (Map<String, Object?> row) =>
-            Country(row['id'] as int?, row['name'] as String));
+            CountryEntity(row['id'] as int?, row['name'] as String));
   }
 
   @override
   Future<List<int>> findAllCountriesId() async {
-    return _queryAdapter.queryList('SELECT id FROM Country',
+    return _queryAdapter.queryList('SELECT id FROM CountryEntity',
         mapper: (Map<String, Object?> row) => row.values.first as int);
   }
 
   @override
-  Future<Country?> findCountryById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Country WHERE id = ?1',
+  Future<CountryEntity?> findCountryById(int id) async {
+    return _queryAdapter.query('SELECT * FROM CountryEntity WHERE id = ?1',
         mapper: (Map<String, Object?> row) =>
-            Country(row['id'] as int?, row['name'] as String),
+            CountryEntity(row['id'] as int?, row['name'] as String),
         arguments: [id]);
   }
 
   @override
-  Future<void> insertCountry(Country post) async {
-    await _countryInsertionAdapter.insert(post, OnConflictStrategy.abort);
+  Future<void> insertCountry(CountryEntity post) async {
+    await _countryEntityInsertionAdapter.insert(post, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> updateCountry(Country post) async {
-    await _countryUpdateAdapter.update(post, OnConflictStrategy.abort);
+  Future<void> updateCountry(CountryEntity post) async {
+    await _countryEntityUpdateAdapter.update(post, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deleteCountry(Country post) async {
-    await _countryDeletionAdapter.delete(post);
+  Future<void> deleteCountry(CountryEntity post) async {
+    await _countryEntityDeletionAdapter.delete(post);
   }
 }
 
@@ -408,83 +410,22 @@ class _$TypeDao extends TypeDao {
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _typeInsertionAdapter = InsertionAdapter(database, 'Type',
-            (Type item) => <String, Object?>{'id': item.id, 'name': item.name}),
-        _typeUpdateAdapter = UpdateAdapter(database, 'Type', ['id'],
-            (Type item) => <String, Object?>{'id': item.id, 'name': item.name}),
-        _typeDeletionAdapter = DeletionAdapter(database, 'Type', ['id'],
-            (Type item) => <String, Object?>{'id': item.id, 'name': item.name});
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<Type> _typeInsertionAdapter;
-
-  final UpdateAdapter<Type> _typeUpdateAdapter;
-
-  final DeletionAdapter<Type> _typeDeletionAdapter;
-
-  @override
-  Future<List<Type>> findAllTypes() async {
-    return _queryAdapter.queryList('SELECT * FROM Type',
-        mapper: (Map<String, Object?> row) =>
-            Type(row['id'] as int?, row['name'] as String));
-  }
-
-  @override
-  Future<List<int>> findAllTypesId() async {
-    return _queryAdapter.queryList('SELECT id FROM Type',
-        mapper: (Map<String, Object?> row) => row.values.first as int);
-  }
-
-  @override
-  Future<Type?> findTypeById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Type WHERE id = ?1',
-        mapper: (Map<String, Object?> row) =>
-            Type(row['id'] as int?, row['name'] as String),
-        arguments: [id]);
-  }
-
-  @override
-  Future<void> insertType(Type type) async {
-    await _typeInsertionAdapter.insert(type, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> updateType(Type type) async {
-    await _typeUpdateAdapter.update(type, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> deleteType(Type type) async {
-    await _typeDeletionAdapter.delete(type);
-  }
-}
-
-class _$SeriesDao extends SeriesDao {
-  _$SeriesDao(
-    this.database,
-    this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _seriesInsertionAdapter = InsertionAdapter(
+        _typeEntityInsertionAdapter = InsertionAdapter(
             database,
-            'Series',
-            (Series item) =>
+            'TypeEntity',
+            (TypeEntity item) =>
                 <String, Object?>{'id': item.id, 'name': item.name}),
-        _seriesUpdateAdapter = UpdateAdapter(
+        _typeEntityUpdateAdapter = UpdateAdapter(
             database,
-            'Series',
+            'TypeEntity',
             ['id'],
-            (Series item) =>
+            (TypeEntity item) =>
                 <String, Object?>{'id': item.id, 'name': item.name}),
-        _seriesDeletionAdapter = DeletionAdapter(
+        _typeEntityDeletionAdapter = DeletionAdapter(
             database,
-            'Series',
+            'TypeEntity',
             ['id'],
-            (Series item) =>
+            (TypeEntity item) =>
                 <String, Object?>{'id': item.id, 'name': item.name});
 
   final sqflite.DatabaseExecutor database;
@@ -493,45 +434,118 @@ class _$SeriesDao extends SeriesDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<Series> _seriesInsertionAdapter;
+  final InsertionAdapter<TypeEntity> _typeEntityInsertionAdapter;
 
-  final UpdateAdapter<Series> _seriesUpdateAdapter;
+  final UpdateAdapter<TypeEntity> _typeEntityUpdateAdapter;
 
-  final DeletionAdapter<Series> _seriesDeletionAdapter;
+  final DeletionAdapter<TypeEntity> _typeEntityDeletionAdapter;
 
   @override
-  Future<List<Series>> findAllSeries() async {
-    return _queryAdapter.queryList('SELECT * FROM Series',
+  Future<List<TypeEntity>> findAllTypes() async {
+    return _queryAdapter.queryList('SELECT * FROM TypeEntity',
         mapper: (Map<String, Object?> row) =>
-            Series(row['id'] as int?, row['name'] as String));
+            TypeEntity(row['id'] as int?, row['name'] as String));
   }
 
   @override
-  Future<List<int>> findAllSeriesId() async {
-    return _queryAdapter.queryList('SELECT id FROM Series',
+  Future<List<int>> findAllTypesId() async {
+    return _queryAdapter.queryList('SELECT id FROM TypeEntity',
         mapper: (Map<String, Object?> row) => row.values.first as int);
   }
 
   @override
-  Future<Series?> findSeriesById(int id) async {
-    return _queryAdapter.query('SELECT * FROM Series WHERE id = ?1',
+  Future<TypeEntity?> findTypeById(int id) async {
+    return _queryAdapter.query('SELECT * FROM TypeEntity WHERE id = ?1',
         mapper: (Map<String, Object?> row) =>
-            Series(row['id'] as int?, row['name'] as String),
+            TypeEntity(row['id'] as int?, row['name'] as String),
         arguments: [id]);
   }
 
   @override
-  Future<void> insertSeries(Series series) async {
-    await _seriesInsertionAdapter.insert(series, OnConflictStrategy.abort);
+  Future<void> insertType(TypeEntity type) async {
+    await _typeEntityInsertionAdapter.insert(type, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> updateSeries(Series series) async {
-    await _seriesUpdateAdapter.update(series, OnConflictStrategy.abort);
+  Future<void> updateType(TypeEntity type) async {
+    await _typeEntityUpdateAdapter.update(type, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deleteSeries(Series series) async {
-    await _seriesDeletionAdapter.delete(series);
+  Future<void> deleteType(TypeEntity type) async {
+    await _typeEntityDeletionAdapter.delete(type);
+  }
+}
+
+class _$SeriesDao extends SeriesDao {
+  _$SeriesDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _seriesEntityInsertionAdapter = InsertionAdapter(
+            database,
+            'SeriesEntity',
+            (SeriesEntity item) =>
+                <String, Object?>{'id': item.id, 'name': item.name}),
+        _seriesEntityUpdateAdapter = UpdateAdapter(
+            database,
+            'SeriesEntity',
+            ['id'],
+            (SeriesEntity item) =>
+                <String, Object?>{'id': item.id, 'name': item.name}),
+        _seriesEntityDeletionAdapter = DeletionAdapter(
+            database,
+            'SeriesEntity',
+            ['id'],
+            (SeriesEntity item) =>
+                <String, Object?>{'id': item.id, 'name': item.name});
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<SeriesEntity> _seriesEntityInsertionAdapter;
+
+  final UpdateAdapter<SeriesEntity> _seriesEntityUpdateAdapter;
+
+  final DeletionAdapter<SeriesEntity> _seriesEntityDeletionAdapter;
+
+  @override
+  Future<List<SeriesEntity>> findAllSeries() async {
+    return _queryAdapter.queryList('SELECT * FROM SeriesEntity',
+        mapper: (Map<String, Object?> row) =>
+            SeriesEntity(row['id'] as int?, row['name'] as String));
+  }
+
+  @override
+  Future<List<int>> findAllSeriesId() async {
+    return _queryAdapter.queryList('SELECT id FROM SeriesEntity',
+        mapper: (Map<String, Object?> row) => row.values.first as int);
+  }
+
+  @override
+  Future<SeriesEntity?> findSeriesById(int id) async {
+    return _queryAdapter.query('SELECT * FROM SeriesEntity WHERE id = ?1',
+        mapper: (Map<String, Object?> row) =>
+            SeriesEntity(row['id'] as int?, row['name'] as String),
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> insertSeries(SeriesEntity series) async {
+    await _seriesEntityInsertionAdapter.insert(
+        series, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateSeries(SeriesEntity series) async {
+    await _seriesEntityUpdateAdapter.update(series, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteSeries(SeriesEntity series) async {
+    await _seriesEntityDeletionAdapter.delete(series);
   }
 }

@@ -6,7 +6,7 @@ import '../database/database.dart';
 
 @dao
 abstract class PostDao {
-  @Query('SELECT * FROM PostEntity')
+  @Query('SELECT * FROM PostEntity ORDER BY timestamp DESC')
   Future<List<PostEntity>> findAllPosts();
 
   @Query('SELECT * FROM PostEntity WHERE id = :id')

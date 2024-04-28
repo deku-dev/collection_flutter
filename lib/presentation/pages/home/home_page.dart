@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/presentation/routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_app/domain/entities/post_entity.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
 import '../../widgets/sidebar.dart';
-import '../create_post/create_post_form.dart';
-import '../post.dart';
+import '../post/post.dart';
 import 'home_cubit.dart';
 
 class HomePage extends StatelessWidget {
@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          QR.to('/create-post');
+          QR.toName(AppRoutes.createPostPage);
         },
         child: const Icon(Icons.add),
       ),
@@ -56,12 +56,10 @@ class TeasersWidget extends StatelessWidget {
           itemCount: teaserPosts.length,
           itemBuilder: (context, index) {
             final post = teaserPosts[index];
+            final teaserImage = post.images!.split(',')[0];
             return GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PostPage(post: post)),
-                );
+                QR.toName(AppRoutes.postPage, params: {'postId': post.id});
               },
               child: GridTile(
                 footer: GridTileBar(

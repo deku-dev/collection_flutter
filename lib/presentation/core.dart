@@ -10,6 +10,7 @@ class Core extends StatelessWidget {
     final appRoutes = AppRoutes();
     appRoutes.setupRouter();
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routeInformationParser: const QRouteInformationParser(),
       routerDelegate: QRouterDelegate(appRoutes.routes),
       theme: ThemeData(
