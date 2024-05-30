@@ -208,7 +208,8 @@ class _$PostDao extends PostDao {
 
   @override
   Future<List<PostEntity>> findAllPosts() async {
-    return _queryAdapter.queryList('SELECT * FROM PostEntity',
+    return _queryAdapter.queryList(
+        'SELECT * FROM PostEntity ORDER BY timestamp DESC',
         mapper: (Map<String, Object?> row) => PostEntity(
             id: row['id'] as int?,
             title: row['title'] as String,

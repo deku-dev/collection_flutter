@@ -54,7 +54,7 @@ class PostEntity extends BaseEntity {
       this.id,
       required this.title,
       this.description,
-      this.images,
+      this.images = '[]',
       required this.typeId,
       this.year,
       required this.timestamp,
@@ -65,6 +65,10 @@ class PostEntity extends BaseEntity {
 
   List<String> get imageUrls {
     return json.decode(images!).cast<String>();
+  }
+
+  String get firstImage {
+    return imageUrls[0];
   }
 
   Future<TypeEntity?> getType() async {

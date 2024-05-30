@@ -13,7 +13,7 @@ class AppRoutes {
   static String createPostPage = 'Create Post Page';
 
   void setupRouter() {
-    QR.settings.notFoundPage = QRoute(path: '/404', builder: ()=> NotFoundPage());
+    QR.settings.notFoundPage = QRoute(path: '/404', builder: ()=> const NotFoundPage());
   }
 
   final routes = [
@@ -25,7 +25,7 @@ class AppRoutes {
         path: '/user/:userId',
         builder: () => const SettingsPage(),
         children: [
-          QRoute(name: settingsPage, path: '/settings', builder: () => SettingsPage()),
+          QRoute(name: settingsPage, path: '/settings', builder: () => const SettingsPage()),
         ]),
   ];
 }

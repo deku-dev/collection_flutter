@@ -8,7 +8,6 @@ import '../../../data/database/database.dart';
 
 class PostPage extends StatelessWidget {
   final postId = QR.params['postId']!.asInt!;
-
   late final Future<PostEntity?> post = GetIt.I.get<AppDatabase>().postDao.findPostById(postId);
 
   PostPage({Key? key}) : super(key: key);
@@ -18,6 +17,39 @@ class PostPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Post Page'),
+        actions: [
+          PopupMenuButton(
+            icon: Icon(
+              Icons.more_vert,
+            ),
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                child: Text(
+                  'Edit',
+                  style: TextStyle(color: Colors.black), // Customize the text color
+                ),
+                value: 'edit',
+              ),
+              PopupMenuItem(
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.black), // Customize the text color
+                ),
+                value: 'delete',
+              ),
+              // Add more PopupMenuItems for other actions
+            ],
+            onSelected: (value) {
+              // Handle the selected action
+              if (value == 'edit') {
+                // Handle edit action
+              } else if (value == 'delete') {
+                // Handle delete action
+              }
+              // Add more cases for other actions
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<PostEntity?>(
         future: post,
@@ -32,9 +64,7 @@ class PostPage extends StatelessWidget {
             return PostContent(post: post);
           }
         },
-      )
+      ),
     );
   }
-
-
 }

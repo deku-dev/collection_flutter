@@ -13,6 +13,7 @@ class Core extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routeInformationParser: const QRouteInformationParser(),
       routerDelegate: QRouterDelegate(appRoutes.routes),
+      title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,

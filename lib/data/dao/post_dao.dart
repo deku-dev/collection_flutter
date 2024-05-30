@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:faker/faker.dart';
 import 'package:floor/floor.dart';
 import 'package:flutter_app/domain/entities/post_entity.dart';
@@ -33,7 +35,7 @@ abstract class PostDao {
       final post = PostEntity(
           title: faker.job.title(),
           description: faker.lorem.sentence(),
-          images: faker.image.image(),
+          images: jsonEncode([faker.image.image()]),
           typeId: type[random.integer(type.length)],
           year: random.integer(2023),
           timestamp: currentDate.millisecondsSinceEpoch,

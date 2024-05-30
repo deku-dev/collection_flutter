@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:search_choices/search_choices.dart';
 
-class CustomSearchChoices<int> extends StatefulWidget {
-  final List<DropdownMenuItem<int>> items;
+class CustomSearchChoices<T> extends StatefulWidget {
+  final List<DropdownMenuItem<T>> items;
   final String? inputString;
-  final int? selectedValue;
-  final ValueChanged<int?> onChanged;
+  final T? selectedValue;
+  final ValueChanged<T?> onChanged;
   final String? hintText;
   final String? searchHintText;
   final bool showCustomItem;
@@ -24,12 +24,11 @@ class CustomSearchChoices<int> extends StatefulWidget {
   });
 
   @override
-  _CustomSearchChoicesState<int> createState() =>
-      _CustomSearchChoicesState<int>();
+  _CustomSearchChoicesState<T> createState() => _CustomSearchChoicesState<T>();
 }
 
-class _CustomSearchChoicesState<int> extends State<CustomSearchChoices<int>> {
-  int? _selectedValue;
+class _CustomSearchChoicesState<T> extends State<CustomSearchChoices<T>> {
+  T? _selectedValue;
   String? inputString;
 
   final _formKey = GlobalKey<FormState>();
@@ -41,64 +40,59 @@ class _CustomSearchChoicesState<int> extends State<CustomSearchChoices<int>> {
     inputString = widget.inputString;
   }
 
+  Future<T?> addItemDialog() async {
+    return await showDialog<T>(
+      context: CustomSearchChoices.navKey.currentState?.overlay?.context ?? context,
+      builder: (BuildContext alertContext) {
+        return AlertDialog(
+          title: const Text("Add an item"),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextFormField(
+                  validator: (value) {
+                    return (value == null || value.isEmpty) ? "must not be empty" : null;
+                  },
+                  initialValue: inputString,
+                  onChanged: (value) {
+                    inputString = value;
+                  },
+                  autofocus: true,
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      final T itemId = (1 + widget.items.length) as T;
+                      setState(() {
+                        widget.items.add(DropdownMenuItem(
+                          value: itemId,
+                          child: Text(inputString!),
+                        ));
+                      });
+                      Navigator.pop(alertContext, itemId);
+                    }
+                  },
+                  child: const Text("Ok"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(alertContext, null);
+                  },
+                  child: const Text("Cancel"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<DropdownMenuItem<int>> dropdownItems = widget.items;
-
-    final input = TextFormField(
-      validator: (value) {
-        return ((value?.length ?? 0) < 6
-            ? "must be at least 6 characters long"
-            : null);
-      },
-      initialValue: inputString,
-      onChanged: (value) {
-        inputString = value;
-      },
-      autofocus: true,
-    );
-
-    addItemDialog() async {
-      return await showDialog(
-        context: CustomSearchChoices.navKey.currentState?.overlay?.context ?? context,
-        builder: (BuildContext alertContext) {
-          Widget dialogWidget = AlertDialog(
-            title: const Text("Add an item"),
-            content: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  input,
-                  TextButton(
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        final int? itemId = 1 + dropdownItems.length as int?;
-                        setState(() {
-                          dropdownItems.add(DropdownMenuItem(
-                            value: itemId,
-                            child: Text(inputString!),
-                          ));
-                        });
-                        Navigator.pop(alertContext, itemId);
-                      }
-                    },
-                    child: const Text("Ok"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(alertContext, null);
-                    },
-                    child: const Text("Cancel"),
-                  ),
-                ],
-              ),
-            ),
-          );
-          return dialogWidget;
-        },
-      );
-    }
+    List<DropdownMenuItem<T>> dropdownItems = widget.items;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,9 +102,7 @@ class _CustomSearchChoicesState<int> extends State<CustomSearchChoices<int>> {
           value: _selectedValue,
           padding: 2,
           hint: widget.hintText != null ? Text(widget.hintText!) : null,
-          searchHint: widget.searchHintText != null
-              ? Text(widget.searchHintText!)
-              : null,
+          searchHint: widget.searchHintText != null ? Text(widget.searchHintText!) : null,
           isExpanded: true,
           searchFn: (String keyword, items) {
             if (keyword.isEmpty) {
@@ -130,27 +122,28 @@ class _CustomSearchChoicesState<int> extends State<CustomSearchChoices<int>> {
             return (ret);
           },
           disabledHint: (Function updateParent) {
-            return (TextButton(
+            return TextButton(
               onPressed: () {
-                addItemDialog().then((value) async {
-                  updateParent(value);
+                addItemDialog().then((value) {
+                  if (value != null) {
+                    updateParent(value);
+                  }
                 });
               },
               child: const Text("No choice, click to add one"),
-            ));
+            );
           },
-          emptyListWidget: (String? keyword, BuildContext closeContext,
-              Function updateParent) {
+          emptyListWidget: (String? keyword, BuildContext closeContext, Function updateParent) {
             return Container(
               padding: const EdgeInsets.all(8),
               child: Align(
                 alignment: Alignment.center,
                 child: TextButton(
                   onPressed: () {
-                    addItemDialog().then((value) async {
-
-                      debugPrint("value: 1");
-                      // _selectedValue = value;
+                    addItemDialog().then((value) {
+                      if (value != null) {
+                        updateParent(value);
+                      }
                     });
                   },
                   child: const Text("No choice, click to add one"),
@@ -158,25 +151,19 @@ class _CustomSearchChoicesState<int> extends State<CustomSearchChoices<int>> {
               ),
             );
           },
-          closeButton:
-              (int? value, BuildContext closeContext, Function updateParent) {
-            return (dropdownItems.length >= 100
+          closeButton: (T? value, BuildContext closeContext, Function updateParent) {
+            return dropdownItems.length >= 100
                 ? "Close"
                 : TextButton(
-                    onPressed: () {
-                      debugPrint("value: $value");
-                      addItemDialog().then((value) async {
-                        if (value != null &&
-                            dropdownItems.indexWhere(
-                                    (element) => element.value == value) !=
-                                -1) {
-                          Navigator.pop(context);
-                          updateParent(value);
-                        }
-                      });
-                    },
-                    child: const Text("Add and select item"),
-                  ));
+              onPressed: () {
+                addItemDialog().then((value) {
+                  if (value != null && dropdownItems.indexWhere((element) => element.value == value) == -1) {
+                    updateParent(value);
+                  }
+                });
+              },
+              child: const Text("Add and select item"),
+            );
           },
           onChanged: (value) {
             setState(() {
@@ -184,10 +171,6 @@ class _CustomSearchChoicesState<int> extends State<CustomSearchChoices<int>> {
             });
             widget.onChanged(value);
           },
-          // displayItem: (item, isSelected) {
-          //   // Customize how items are displayed here
-          //   return isSelected ? const SizedBox.shrink() : item;
-          // },
         ),
       ],
     );
