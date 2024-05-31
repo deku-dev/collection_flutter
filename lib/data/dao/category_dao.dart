@@ -1,9 +1,13 @@
+
+import 'package:faker/faker.dart';
 import 'package:floor/floor.dart';
 import 'package:flutter_app/domain/entities/category_entity.dart';
-import 'package:faker/faker.dart';
+
+import 'base_dao.dart';
 
 @dao
-abstract class CategoryDao {
+abstract class CategoryDao extends BaseDao<CategoryEntity> {
+
   @Query('SELECT * FROM CategoryEntity')
   Future<List<CategoryEntity>> findAllCategories();
 
@@ -13,20 +17,17 @@ abstract class CategoryDao {
   @Query('SELECT * FROM CategoryEntity WHERE id = :id')
   Future<CategoryEntity?> findCategoryById(int id);
 
-  @insert
-  Future<void> insertCategory(CategoryEntity category);
-
   @update
-  Future<void> updateCategory(CategoryEntity category);
+  Future<void> updateItem(CategoryEntity category);
 
   @delete
-  Future<void> deleteCategory(CategoryEntity category);
+  Future<void> deleteItem(CategoryEntity category);
 
   Future<void> insertFake(int count) async {
     final faker = Faker();
     for (var i = 0; i < count; i++) {
       final category = CategoryEntity(null, faker.food.dish());
-      await insertCategory(category);
+      await insertItem(category);
     }
   }
 }
