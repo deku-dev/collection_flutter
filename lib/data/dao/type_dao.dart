@@ -1,7 +1,7 @@
+import 'package:Collectioneer/data/dao/base_dao.dart';
+import 'package:Collectioneer/domain/entities/type_entity.dart';
 import 'package:faker/faker.dart';
 import 'package:floor/floor.dart';
-import 'package:flutter_app/data/dao/base_dao.dart';
-import 'package:flutter_app/domain/entities/type_entity.dart';
 
 @dao
 abstract class TypeDao extends BaseDao<TypeEntity> {

@@ -1,56 +1,102 @@
+import 'package:Collectioneer/domain/entities/category_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/domain/entities/category_entity.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qlevar_router/qlevar_router.dart';
 
 import '../../data/database/database.dart';
+import '../routes.dart';
+import 'sidebar_cubit.dart';
 
-class Sidebar extends StatelessWidget {
+class Sidebar extends StatefulWidget {
   const Sidebar({Key? key}) : super(key: key);
+
+  @override
+  _SidebarState createState() => _SidebarState();
+}
+
+class _SidebarState extends State<Sidebar> {
+  late SidebarCubit _sidebarCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _sidebarCubit = context.read<SidebarCubit>();
+    QR.navigator.addListener(_updateSelectedCategory);
+  }
+
+  @override
+  void dispose() {
+    QR.navigator.removeListener(_updateSelectedCategory);
+    super.dispose();
+  }
+
+  void _updateSelectedCategory() {
+    final currentRoute = QR.currentRoute.name;
+    if (currentRoute == AppRoutes.categoryPage) {
+      final categoryId = QR.params['id']?.asInt;
+      _sidebarCubit.selectCategory(categoryId);
+    } else if (currentRoute == AppRoutes.homePage) {
+      _sidebarCubit.clearSelection();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<CategoryEntity>>(
-      future: _fetchTeasers(), // Call the function to fetch the list of posts (categories)
+      future: _fetchCategories(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // While waiting for the future to complete, show a loading indicator
           return const Drawer(
             child: Center(
               child: CircularProgressIndicator(),
             ),
           );
         } else if (snapshot.hasError) {
-          // If an error occurred while fetching the data, show an error message
           return const Drawer(
             child: Center(
               child: Text('Error loading data'),
             ),
           );
         } else {
-          // If the future has completed successfully, display the fetched data
-          final categories = snapshot.data;
+          final categories = snapshot.data ?? [];
           return Drawer(
             child: Column(
               children: [
                 UserAccountsDrawerHeader(
-                  accountName: Text('User Name', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                  accountEmail: Text('user.email@example.com'),
+                  accountName: const Text(
+                    'User Name',
+                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                  accountEmail: const Text('user.email@example.com'),
                   currentAccountPicture: CircleAvatar(
                     backgroundColor: Colors.white,
                     child: Text(
                       'U',
-                      style: TextStyle(fontSize: 40.0, color: Colors.blue),
+                      style: TextStyle(fontSize: 40.0, color: Theme.of(context).primaryColor),
                     ),
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
+                ListTile(
+                  leading: const Icon(Icons.view_list),
+                  title: const Text(
+                    'All Items',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  selected: context.select((SidebarCubit cubit) => cubit.state == null),
+                  onTap: () {
+                    _sidebarCubit.clearSelection();
+                    QR.toName(AppRoutes.homePage); // Navigate to the home page showing all items
+                  },
+                ),
                 Container(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: const Text(
                     'Categories',
                     style: TextStyle(
-                      fontSize: 20.0,
+                      fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -58,30 +104,33 @@ class Sidebar extends StatelessWidget {
                 Expanded(
                   child: ListView(
                     padding: EdgeInsets.zero,
-                    children: categories!.map((category) => ListTile(
-                      leading: Icon(Icons.category),
-                      title: Text(
-                        category.name,
-                        style: TextStyle(
-                          fontSize: 18.0,
+                    children: categories.map((category) {
+                      return ListTile(
+                        leading: const Icon(Icons.category),
+                        title: Text(
+                          category.name,
+                          style: const TextStyle(fontSize: 18.0),
                         ),
-                      ),
-                      onTap: () {
-                        // Handle item click here
-                      },
-                    )).toList(),
+                        selected: context.select((SidebarCubit cubit) => cubit.state == category.id),
+                        onTap: () {
+                          _sidebarCubit.selectCategory(category.id);
+                          QR.toName(AppRoutes.categoryPage, params: {'id': category.id.toString()}); // Navigate to the category page
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
+                const Divider(),
                 ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('Settings'),
+                  leading: const Icon(Icons.settings),
+                  title: const Text('Settings'),
                   onTap: () {
-                    // Handle settings click here
+                    QR.toName(AppRoutes.settingsPage);
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text('Logout'),
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Logout'),
                   onTap: () {
                     // Handle logout click here
                   },
@@ -94,9 +143,8 @@ class Sidebar extends StatelessWidget {
     );
   }
 
-  // Function to fetch the list of posts (teasers)
-  Future<List<CategoryEntity>> _fetchTeasers() async {
-    AppDatabase database = await AppDatabase.getInstance();
+  Future<List<CategoryEntity>> _fetchCategories() async {
+    final database = await AppDatabase.getInstance();
     return await database.categoryDao.findAllCategories();
   }
 }

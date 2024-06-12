@@ -1,17 +1,22 @@
+import 'package:Collectioneer/presentation/pages/home/teaser_widget.dart';
+import 'package:Collectioneer/presentation/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/domain/entities/post_entity.dart';
-import 'package:flutter_app/presentation/routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
-import '../../widgets/image_fallback.dart';
+import '../../../domain/entities/post_entity.dart';
 import '../../widgets/sidebar.dart';
 import 'home_cubit.dart';
+import 'sorting_cubit.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Future<void> _refreshPosts(BuildContext context) async {
+    context.read<TeaserPostsCubit>().loadTeaserPosts(null);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +34,35 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.sort),
+            onPressed: () {
+              context.read<SortingCubit>().toggleSortOrder();
+            },
           )
         ],
       ),
       drawer: const Sidebar(),
-      body: BlocProvider(
-        create: (context) => TeaserPostsCubit()..loadTeaserPosts(),
-        child: const TeasersWidget(),
+      body: RefreshIndicator(
+        onRefresh: () => _refreshPosts(context),
+        child: BlocBuilder<TeaserPostsCubit, List<PostEntity>>(
+          builder: (context, teaserPosts) {
+            return BlocBuilder<SortingCubit, SortOrder>(
+              builder: (context, sortOrder) {
+                List<PostEntity> sortedPosts = List.from(teaserPosts);
+                sortedPosts.sort((a, b) {
+                  if (sortOrder == SortOrder.ascending) {
+                    return a.title.compareTo(b.title); // Assuming PostEntity has a title property
+                  } else {
+                    return b.title.compareTo(a.title);
+                  }
+                });
+                return TeaserPostsWidget(teaserPosts: sortedPosts);
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -43,76 +70,6 @@ class HomePage extends StatelessWidget {
         },
         child: const Icon(Icons.add),
       ),
-    );
-  }
-}
-
-class TeasersWidget extends StatelessWidget {
-  const TeasersWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TeaserPostsCubit, List<PostEntity>>(
-      builder: (context, teaserPosts) {
-        return GridView.builder(
-          padding: const EdgeInsets.all(16.0),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 16.0,
-            crossAxisSpacing: 16.0,
-            childAspectRatio: 0.75,
-          ),
-          itemCount: teaserPosts.length,
-          itemBuilder: (context, index) {
-            final post = teaserPosts[index];
-            return GestureDetector(
-              onTap: () {
-                QR.toName(AppRoutes.postPage, params: {'postId': post.id});
-              },
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                elevation: 5,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(16.0),
-                          topRight: Radius.circular(16.0),
-                        ),
-                        child: NetworkImageWithFallback(imageUrl: post.firstImage),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(16.0),
-                          bottomRight: Radius.circular(16.0),
-                        ),
-                      ),
-                      child: Text(
-                        post.title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
     );
   }
 }

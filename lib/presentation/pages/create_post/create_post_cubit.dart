@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Collectioneer/presentation/pages/home/home_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -8,9 +9,10 @@ import 'package:qlevar_router/qlevar_router.dart';
 import '../../../data/database/database.dart';
 import '../../../domain/entities/post_entity.dart';
 import '../../routes.dart';
-import 'create_post_state.dart';  // Переконайтеся, що цей пакет імпортовано правильно
+import 'create_post_state.dart';
 
 class CreatePostFormCubit extends Cubit<CreatePostFormState> {
+
   CreatePostFormCubit() : super(CreatePostFormState.initial());
 
   void updateTitle(String title) {
@@ -78,8 +80,20 @@ class CreatePostFormCubit extends Cubit<CreatePostFormState> {
     });
   }
 
-  void submitForm() {
-    if (state.title.isNotEmpty && state.description.isNotEmpty && state.year != null && state.selectedTypeId != null && state.selectedCategoryId != null && state.selectedSeriesId != null && state.selectedCountryId != null) {
+  PostEntity? submitForm(BuildContext context) {
+    if (state.title.isNotEmpty &&
+        state.description.isNotEmpty &&
+        state.year != null &&
+        state.selectedTypeId != null &&
+        state.selectedCategoryId != null &&
+        state.selectedSeriesId != null &&
+        state.selectedCountryId != null) {
+
+      List<String> images = List.from(state.imageUrls);
+      if (images.isEmpty) {
+        images.add('404');
+      }
+
       final post = PostEntity(
         title: state.title,
         description: state.description,
@@ -90,15 +104,18 @@ class CreatePostFormCubit extends Cubit<CreatePostFormState> {
         seriesId: state.selectedSeriesId!,
         countryId: state.selectedCountryId!,
         timestamp: DateTime.now().millisecondsSinceEpoch,
-        images: json.encode(state.imageUrls).toString(),
+        images: json.encode(images).toString(),
       );
 
       GetIt.I.get<AppDatabase>().postDao.insertPost(post).then((value) {
         debugPrint('Post inserted');
         QR.toName(AppRoutes.homePage);
+        context.read<TeaserPostsCubit>().loadTeaserPosts(null);
       });
+      return post;
     } else {
       debugPrint('Form is not complete');
     }
+    return null;
   }
 }

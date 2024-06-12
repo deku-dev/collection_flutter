@@ -226,8 +226,17 @@ class _$PostDao extends PostDao {
   }
 
   @override
+  Future<List<PostEntity>> findPostByCategory(int id) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM PostEntity WHERE category_id = ?1 ORDER BY timestamp DESC',
+        mapper: (Map<String, Object?> row) => PostEntity(id: row['id'] as int?, title: row['title'] as String, description: row['description'] as String?, images: row['image_urls'] as String?, typeId: row['type_id'] as int, year: row['year'] as int?, timestamp: row['timestamp'] as int, inStock: row['inStock'] == null ? null : (row['inStock'] as int) != 0, countryId: row['country_id'] as int, seriesId: row['series_id'] as int, categoryId: row['category_id'] as int),
+        arguments: [id]);
+  }
+
+  @override
   Future<PostEntity?> findPostById(int id) async {
-    return _queryAdapter.query('SELECT * FROM PostEntity WHERE id = ?1',
+    return _queryAdapter.query(
+        'SELECT * FROM PostEntity WHERE id = ?1 ORDER BY timestamp DESC',
         mapper: (Map<String, Object?> row) => PostEntity(
             id: row['id'] as int?,
             title: row['title'] as String,
@@ -317,19 +326,19 @@ class _$CategoryDao extends CategoryDao {
   }
 
   @override
-  Future<void> insertCategory(CategoryEntity category) async {
+  Future<void> _insertItem(CategoryEntity item) async {
     await _categoryEntityInsertionAdapter.insert(
-        category, OnConflictStrategy.abort);
+        item, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> updateCategory(CategoryEntity category) async {
+  Future<void> updateItem(CategoryEntity category) async {
     await _categoryEntityUpdateAdapter.update(
         category, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deleteCategory(CategoryEntity category) async {
+  Future<void> deleteItem(CategoryEntity category) async {
     await _categoryEntityDeletionAdapter.delete(category);
   }
 }
@@ -391,17 +400,17 @@ class _$CountryDao extends CountryDao {
   }
 
   @override
-  Future<void> insertCountry(CountryEntity post) async {
-    await _countryEntityInsertionAdapter.insert(post, OnConflictStrategy.abort);
+  Future<void> _insertItem(CountryEntity item) async {
+    await _countryEntityInsertionAdapter.insert(item, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> updateCountry(CountryEntity post) async {
+  Future<void> updateItem(CountryEntity post) async {
     await _countryEntityUpdateAdapter.update(post, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deleteCountry(CountryEntity post) async {
+  Future<void> deleteItem(CountryEntity post) async {
     await _countryEntityDeletionAdapter.delete(post);
   }
 }
@@ -463,17 +472,17 @@ class _$TypeDao extends TypeDao {
   }
 
   @override
-  Future<void> insertType(TypeEntity type) async {
-    await _typeEntityInsertionAdapter.insert(type, OnConflictStrategy.abort);
+  Future<void> _insertItem(TypeEntity item) async {
+    await _typeEntityInsertionAdapter.insert(item, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> updateType(TypeEntity type) async {
+  Future<void> updateItem(TypeEntity type) async {
     await _typeEntityUpdateAdapter.update(type, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deleteType(TypeEntity type) async {
+  Future<void> deleteItem(TypeEntity type) async {
     await _typeEntityDeletionAdapter.delete(type);
   }
 }
@@ -535,18 +544,17 @@ class _$SeriesDao extends SeriesDao {
   }
 
   @override
-  Future<void> insertSeries(SeriesEntity series) async {
-    await _seriesEntityInsertionAdapter.insert(
-        series, OnConflictStrategy.abort);
+  Future<void> _insertItem(SeriesEntity item) async {
+    await _seriesEntityInsertionAdapter.insert(item, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> updateSeries(SeriesEntity series) async {
+  Future<void> updateItem(SeriesEntity series) async {
     await _seriesEntityUpdateAdapter.update(series, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deleteSeries(SeriesEntity series) async {
+  Future<void> deleteItem(SeriesEntity series) async {
     await _seriesEntityDeletionAdapter.delete(series);
   }
 }

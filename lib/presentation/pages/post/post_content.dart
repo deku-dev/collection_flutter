@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -150,8 +152,9 @@ class FutureDataWidget<T> extends StatelessWidget {
 
 class ImageGallery extends StatelessWidget {
   final List<String> images;
+  final bool isLocal;
 
-  const ImageGallery({Key? key, required this.images}) : super(key: key);
+  const ImageGallery({Key? key, required this.images, this.isLocal = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -161,9 +164,14 @@ class ImageGallery extends StatelessWidget {
         scrollPhysics: const BouncingScrollPhysics(),
         builder: (BuildContext context, int index) {
           return PhotoViewGalleryPageOptions(
-            imageProvider: NetworkImage(images[index]),
+            imageProvider: FileImage(File(images[index])),
             initialScale: PhotoViewComputedScale.contained * 0.8,
             heroAttributes: PhotoViewHeroAttributes(tag: index),
+            errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+              return Image.asset(
+                'assets/default_image.png',
+              );
+            },
           );
         },
         itemCount: images.length,

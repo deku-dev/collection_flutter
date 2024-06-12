@@ -1,7 +1,7 @@
+import 'package:Collectioneer/presentation/pages/create_post/widgets/image_picker.dart';
+import 'package:Collectioneer/presentation/pages/create_post/widgets/select_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app/presentation/pages/create_post/widgets/image_picker.dart';
-import 'package:flutter_app/presentation/pages/create_post/widgets/select_choice.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'create_post_cubit.dart';
@@ -67,7 +67,7 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Title',
-                        labelStyle: TextStyle(color: Colors.blueGrey),
+                        labelStyle: const TextStyle(color: Colors.blueGrey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -86,7 +86,7 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Description',
-                        labelStyle: TextStyle(color: Colors.blueGrey),
+                        labelStyle: const TextStyle(color: Colors.blueGrey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -206,7 +206,7 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            context.read<CreatePostFormCubit>().submitForm();
+                            context.read<CreatePostFormCubit>().submitForm(context);
                           }
                         },
                         style: ElevatedButton.styleFrom(

@@ -1,31 +1,42 @@
-import 'package:flutter_app/presentation/pages/create_post/create_post_form.dart';
-import 'package:flutter_app/presentation/pages/home/home_page.dart';
-import 'package:flutter_app/presentation/pages/not_found_page.dart';
-import 'package:flutter_app/presentation/pages/post/post.dart';
-import 'package:flutter_app/presentation/pages/settings.dart';
+import 'package:Collectioneer/presentation/pages/category/category_page.dart';
+import 'package:Collectioneer/presentation/pages/create_post/create_post_form.dart';
+import 'package:Collectioneer/presentation/pages/home/home_cubit.dart';
+import 'package:Collectioneer/presentation/pages/home/home_page.dart';
+import 'package:Collectioneer/presentation/pages/not_found_page.dart';
+import 'package:Collectioneer/presentation/pages/post/post.dart';
+import 'package:Collectioneer/presentation/pages/settings/settings.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
+
 class AppRoutes {
-  static String homePage = 'Home Page';
-  static String userPage = 'User Page';
-  static String settingsPage = 'Settings Page';
-  static String postPage = 'Post Page';
-  static String createPostPage = 'Create Post Page';
+  static const String homePage = 'Home Page';
+  static const String userPage = 'User Page';
+  static const String settingsPage = 'Settings Page';
+  static const String postPage = 'Post Page';
+  static const String createPostPage = 'Create Post Page';
+  static const String categoryPage = 'Category Page';
+
+  final TeaserPostsCubit teaserPostsCubit;
+
+  AppRoutes({required this.teaserPostsCubit});
 
   void setupRouter() {
-    QR.settings.notFoundPage = QRoute(path: '/404', builder: ()=> const NotFoundPage());
+    QR.settings.notFoundPage = QRoute(path: '/404', builder: () => const NotFoundPage());
   }
 
-  final routes = [
+  List<QRoute> get routes => [
     QRoute(name: homePage, path: '/', builder: () => HomePage()),
-    QRoute(name: postPage, path: '/post/:postId', builder: () => PostPage()),
-    QRoute(name: createPostPage, path: '/create-post', builder: () => const CreatePostFormPage()),
     QRoute(
-        name: userPage,
-        path: '/user/:userId',
-        builder: () => const SettingsPage(),
-        children: [
-          QRoute(name: settingsPage, path: '/settings', builder: () => const SettingsPage()),
-        ]),
+      name: postPage,
+      path: '/post/:id',
+      builder: () => BlocProvider.value(
+        value: teaserPostsCubit,
+        child: PostPage(teaserPostsCubit: teaserPostsCubit),
+      ),
+    ),
+    QRoute(name: createPostPage, path: '/create-post', builder: () => const CreatePostFormPage()),
+    QRoute(name: settingsPage, path: '/settings', builder: () => const SettingsPage()),
+    QRoute(name: categoryPage, path: '/category/:id', builder: () => CategoryPage()),
   ];
 }

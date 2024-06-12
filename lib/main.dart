@@ -2,7 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_app/presentation/core.dart';
+import 'package:Collectioneer/presentation/core.dart';
+import 'package:Collectioneer/presentation/pages/home/home_cubit.dart';
+import 'package:Collectioneer/presentation/pages/home/sorting_cubit.dart';
+import 'package:Collectioneer/presentation/pages/settings/theme_notifier.dart';
+import 'package:Collectioneer/presentation/widgets/sidebar_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -21,13 +26,30 @@ Future<void> main() async {
   await copyAssetToAppDirectory('assets/default_image.png', 'default_image.png');
 
   await getIt.allReady();
-  const count = 10;
-  getIt<AppDatabase>().countryDao.insertFake(count);
-  getIt<AppDatabase>().typeDao.insertFake(count);
-  getIt<AppDatabase>().categoryDao.insertFake(count);
-  getIt<AppDatabase>().seriesDao.insertFake(count);
+  // const count = 10;
+  // getIt<AppDatabase>().countryDao.insertFake(count);
+  // getIt<AppDatabase>().typeDao.insertFake(count);
+  // getIt<AppDatabase>().categoryDao.insertFake(count);
+  // getIt<AppDatabase>().seriesDao.insertFake(count);
 
-  runApp(const Core());
+  runApp(const App());
+}
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => TeaserPostsCubit()..loadTeaserPosts(null)),
+        BlocProvider(create: (_) => ThemeCubit()),
+        BlocProvider(create: (_) => SidebarCubit()),
+        BlocProvider(create: (_) => SortingCubit()),
+      ],
+      child: const Core(),
+    );
+  }
 }
 
 Future<String> copyAssetToAppDirectory(String assetPath, String filename) async {

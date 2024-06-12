@@ -1,7 +1,7 @@
 
+import 'package:Collectioneer/domain/entities/category_entity.dart';
 import 'package:faker/faker.dart';
 import 'package:floor/floor.dart';
-import 'package:flutter_app/domain/entities/category_entity.dart';
 
 import 'base_dao.dart';
 

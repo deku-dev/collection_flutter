@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:Collectioneer/domain/entities/category_entity.dart';
+import 'package:Collectioneer/domain/entities/country_entity.dart';
+import 'package:Collectioneer/domain/entities/series_entity.dart';
+import 'package:Collectioneer/domain/entities/type_entity.dart';
 import 'package:floor/floor.dart';
-import 'package:flutter_app/domain/entities/category_entity.dart';
-import 'package:flutter_app/domain/entities/country_entity.dart';
-import 'package:flutter_app/domain/entities/series_entity.dart';
-import 'package:flutter_app/domain/entities/type_entity.dart';
 
 import 'base_entity.dart';
 
@@ -68,7 +68,7 @@ class PostEntity extends BaseEntity {
   }
 
   String get firstImage {
-    return imageUrls[0];
+    return imageUrls[0] ?? '';
   }
 
   Future<TypeEntity?> getType() async {

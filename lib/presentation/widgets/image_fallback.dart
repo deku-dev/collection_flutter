@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class NetworkImageWithFallback extends StatelessWidget {
@@ -14,8 +16,8 @@ class NetworkImageWithFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        return Image.network(
-          imageUrl,
+        return Image.file(
+          File(imageUrl),
           fit: fit,
           errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
             return Center(
