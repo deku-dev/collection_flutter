@@ -1,11 +1,11 @@
 import 'package:Collectioneer/domain/entities/country_entity.dart';
 import 'package:faker/faker.dart';
 import 'package:floor/floor.dart';
+import 'package:flutter/cupertino.dart';
 
-import 'base_dao.dart';
 
 @dao
-abstract class CountryDao extends BaseDao<CountryEntity>{
+abstract class CountryDao {
   @Query('SELECT * FROM CountryEntity')
   Future<List<CountryEntity>> findAllCountries();
 
@@ -21,6 +21,16 @@ abstract class CountryDao extends BaseDao<CountryEntity>{
   @delete
   Future<void> deleteItem(CountryEntity post);
 
+  @insert
+  Future<void> insertCountry(CountryEntity item);
+
+  Future<void> insertItem(CountryEntity item) async {
+    try {
+      await insertCountry(item);
+    } catch (e) {
+      debugPrint('Error adding item: $e');
+    }
+  }
 
   Future<void> insertFake(int count) async {
     final faker = Faker();

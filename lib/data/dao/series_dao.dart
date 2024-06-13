@@ -1,10 +1,11 @@
-import 'package:Collectioneer/data/dao/base_dao.dart';
+
 import 'package:Collectioneer/domain/entities/series_entity.dart';
 import 'package:faker/faker.dart';
 import 'package:floor/floor.dart';
+import 'package:flutter/cupertino.dart';
 
 @dao
-abstract class SeriesDao extends BaseDao<SeriesEntity> {
+abstract class SeriesDao{
   @Query('SELECT * FROM SeriesEntity')
   Future<List<SeriesEntity>> findAllSeries();
 
@@ -19,6 +20,17 @@ abstract class SeriesDao extends BaseDao<SeriesEntity> {
 
   @delete
   Future<void> deleteItem(SeriesEntity series);
+
+  @insert
+  Future<void> insertSeries(SeriesEntity item);
+
+  Future<void> insertItem(SeriesEntity item) async {
+    try {
+      await insertSeries(item);
+    } catch (e) {
+      debugPrint('Error adding item: $e');
+    }
+  }
 
   Future<void> insertFake(int count) async {
     final faker = Faker();

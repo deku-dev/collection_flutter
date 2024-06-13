@@ -9,6 +9,7 @@ class CustomSearchChoices<T> extends StatefulWidget {
   final String? hintText;
   final String? searchHintText;
   final bool showCustomItem;
+  final void Function(String) addItem;
 
   static final navKey = GlobalKey<NavigatorState>();
 
@@ -18,6 +19,7 @@ class CustomSearchChoices<T> extends StatefulWidget {
     required this.selectedValue,
     required this.inputString,
     required this.onChanged,
+    required this.addItem,
     this.hintText,
     this.searchHintText,
     this.showCustomItem = true,
@@ -40,8 +42,8 @@ class _CustomSearchChoicesState<T> extends State<CustomSearchChoices<T>> {
     inputString = widget.inputString;
   }
 
-  Future<T?> addItemDialog() async {
-    return await showDialog<T>(
+  Future<void> addItemDialog() async {
+    final result = await showDialog<String>(
       context: CustomSearchChoices.navKey.currentState?.overlay?.context ?? context,
       builder: (BuildContext alertContext) {
         return AlertDialog(
@@ -61,26 +63,24 @@ class _CustomSearchChoicesState<T> extends State<CustomSearchChoices<T>> {
                   },
                   autofocus: true,
                 ),
-                TextButton(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      final T itemId = (1 + widget.items.length) as T;
-                      setState(() {
-                        widget.items.add(DropdownMenuItem(
-                          value: itemId,
-                          child: Text(inputString!),
-                        ));
-                      });
-                      Navigator.pop(alertContext, itemId);
-                    }
-                  },
-                  child: const Text("Ok"),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(alertContext, null);
-                  },
-                  child: const Text("Cancel"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          Navigator.pop(alertContext, inputString);
+                        }
+                      },
+                      child: const Text("Ok"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(alertContext, null);
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -88,6 +88,10 @@ class _CustomSearchChoicesState<T> extends State<CustomSearchChoices<T>> {
         );
       },
     );
+
+    if (result != null) {
+      widget.addItem(result);
+    }
   }
 
   @override
@@ -98,7 +102,10 @@ class _CustomSearchChoicesState<T> extends State<CustomSearchChoices<T>> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SearchChoices.single(
-          items: dropdownItems,
+          items: dropdownItems.isEmpty ? [const DropdownMenuItem<int>(
+            value: null,
+            child: Text('Empty Placeholder'),
+          )] : dropdownItems,
           value: _selectedValue,
           padding: 2,
           hint: widget.hintText != null ? Text(widget.hintText!) : null,
@@ -121,45 +128,39 @@ class _CustomSearchChoicesState<T> extends State<CustomSearchChoices<T>> {
             }
             return (ret);
           },
-          disabledHint: (Function updateParent) {
+          disabledHint: (Function updateParent, {dynamic param}) {
             return TextButton(
               onPressed: () {
-                addItemDialog().then((value) {
-                  if (value != null) {
-                    updateParent(value);
-                  }
+                addItemDialog().then((_) {
+                  updateParent(param);
                 });
               },
               child: const Text("No choice, click to add one"),
             );
           },
-          emptyListWidget: (String? keyword, BuildContext closeContext, Function updateParent) {
+          emptyListWidget: (String? keyword, BuildContext closeContext, Function updateParent, {dynamic param}) {
             return Container(
               padding: const EdgeInsets.all(8),
               child: Align(
                 alignment: Alignment.center,
                 child: TextButton(
                   onPressed: () {
-                    addItemDialog().then((value) {
-                      if (value != null) {
-                        updateParent(value);
-                      }
+                    addItemDialog().then((_) {
+                      updateParent(param);
                     });
                   },
-                  child: const Text("No choice, click to add one"),
+                  child: const Text("No choice, click to add one1"),
                 ),
               ),
             );
           },
-          closeButton: (T? value, BuildContext closeContext, Function updateParent) {
+          closeButton: (T? value, BuildContext closeContext, Function updateParent, {dynamic param}) {
             return dropdownItems.length >= 100
                 ? "Close"
                 : TextButton(
               onPressed: () {
-                addItemDialog().then((value) {
-                  if (value != null && dropdownItems.indexWhere((element) => element.value == value) == -1) {
-                    updateParent(value);
-                  }
+                addItemDialog().then((_) {
+                  updateParent(param);
                 });
               },
               child: const Text("Add and select item"),

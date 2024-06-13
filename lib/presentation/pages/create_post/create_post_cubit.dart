@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Collectioneer/domain/entities/series_entity.dart';
 import 'package:Collectioneer/presentation/pages/home/home_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +8,10 @@ import 'package:get_it/get_it.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
 import '../../../data/database/database.dart';
+import '../../../domain/entities/category_entity.dart';
+import '../../../domain/entities/country_entity.dart';
 import '../../../domain/entities/post_entity.dart';
+import '../../../domain/entities/type_entity.dart';
 import '../../routes.dart';
 import 'create_post_state.dart';
 
@@ -62,10 +66,22 @@ class CreatePostFormCubit extends Cubit<CreatePostFormState> {
     });
   }
 
+  Future<void> addType(String name) async {
+    final type = TypeEntity(null, name); // Replace with your actual TypeEntity constructor
+    await GetIt.I.get<AppDatabase>().typeDao.insertItem(type);
+    updateTypes(); // Update the list of types after insertion
+  }
+
   void updateCategories() {
     GetIt.I.get<AppDatabase>().categoryDao.findAllCategories().then((value) {
       emit(state.copyWith(categories: value));
     });
+  }
+
+  Future<void> addCategory(String name) async {
+    final category = CategoryEntity(null, name); // Replace with your actual CategoryEntity constructor
+    await GetIt.I.get<AppDatabase>().categoryDao.insertItem(category);
+    updateCategories(); // Update the list of categories after insertion
   }
 
   void updateSeries() {
@@ -74,10 +90,21 @@ class CreatePostFormCubit extends Cubit<CreatePostFormState> {
     });
   }
 
+  Future<void> addSeries(String name) async {
+    final series = SeriesEntity(null, name);
+    await GetIt.I.get<AppDatabase>().seriesDao.insertItem(series);
+    updateSeries();
+  }
+
   void updateCountries() {
     GetIt.I.get<AppDatabase>().countryDao.findAllCountries().then((value) {
       emit(state.copyWith(countries: value));
     });
+  }
+
+  void addCountry(String name)  {
+    final country = CountryEntity(null, name);
+    GetIt.I.get<AppDatabase>().countryDao.insertItem(country).then((value) => updateCountries());
   }
 
   PostEntity? submitForm(BuildContext context) {

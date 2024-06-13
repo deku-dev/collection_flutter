@@ -142,6 +142,9 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                       showCustomItem: true,
                       searchHintText: "Search types...",
                       inputString: '',
+                      addItem: (String name) async {
+                        await context.read<CreatePostFormCubit>().addType(name);
+                      },
                     ),
                     const SizedBox(height: 16.0),
                     CustomSearchChoices<int>(
@@ -157,6 +160,9 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                       showCustomItem: true,
                       searchHintText: "Search categories...",
                       inputString: '',
+                      addItem: (String name) async {
+                        await context.read<CreatePostFormCubit>().addCategory(name);
+                      },
                     ),
                     const SizedBox(height: 16.0),
                     CustomSearchChoices<int>(
@@ -172,6 +178,9 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                       showCustomItem: true,
                       searchHintText: "Search series...",
                       inputString: '',
+                      addItem: (String name) async {
+                        await context.read<CreatePostFormCubit>().addSeries(name);
+                      },
                     ),
                     const SizedBox(height: 16.0),
                     CustomSearchChoices<int>(
@@ -187,6 +196,9 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                       showCustomItem: true,
                       searchHintText: "Search countries...",
                       inputString: '',
+                      addItem: (String name) {
+                        context.read<CreatePostFormCubit>().addCountry(name);
+                      },
                     ),
                     const SizedBox(height: 16.0),
                     Row(

@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:Collectioneer/presentation/core.dart';
 import 'package:Collectioneer/presentation/pages/home/home_cubit.dart';
 import 'package:Collectioneer/presentation/pages/home/sorting_cubit.dart';
 import 'package:Collectioneer/presentation/pages/settings/theme_notifier.dart';
 import 'package:Collectioneer/presentation/widgets/sidebar_cubit.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as path;
@@ -26,7 +26,7 @@ Future<void> main() async {
   await copyAssetToAppDirectory('assets/default_image.png', 'default_image.png');
 
   await getIt.allReady();
-  // const count = 10;
+  // const count = 3;
   // getIt<AppDatabase>().countryDao.insertFake(count);
   // getIt<AppDatabase>().typeDao.insertFake(count);
   // getIt<AppDatabase>().categoryDao.insertFake(count);
