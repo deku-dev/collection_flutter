@@ -32,6 +32,8 @@ Future<void> main() async {
   // getIt<AppDatabase>().categoryDao.insertFake(count);
   // getIt<AppDatabase>().seriesDao.insertFake(count);
 
+
+
   runApp(const App());
 }
 

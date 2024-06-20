@@ -2,10 +2,12 @@ import 'package:equatable/equatable.dart';
 
 import '../../../domain/entities/category_entity.dart';
 import '../../../domain/entities/country_entity.dart';
+import '../../../domain/entities/post_entity.dart';
 import '../../../domain/entities/series_entity.dart';
 import '../../../domain/entities/type_entity.dart';
 
 class CreatePostFormState extends Equatable {
+  final PostEntity? post;
   final String title;
   final String description;
   final bool inStock;
@@ -21,6 +23,7 @@ class CreatePostFormState extends Equatable {
   final List<CountryEntity> countries;
 
   const CreatePostFormState({
+    this.post,
     required this.title,
     required this.description,
     required this.inStock,
@@ -36,21 +39,22 @@ class CreatePostFormState extends Equatable {
     required this.countries,
   });
 
-  factory CreatePostFormState.initial() {
-    return const CreatePostFormState(
-      title: '',
-      description: '',
-      inStock: false,
-      year: null,
-      selectedTypeId: null,
-      selectedCategoryId: null,
-      selectedSeriesId: null,
-      selectedCountryId: null,
-      imageUrls: [],
-      types: [],
-      categories: [],
-      series: [],
-      countries: [],
+  factory CreatePostFormState.initial(PostEntity? post) {
+    return CreatePostFormState(
+      post: post,
+      title: post?.title ?? '',
+      description: post?.description ?? '',
+      inStock: post?.inStock ?? false,
+      year: post?.year,
+      selectedTypeId: post?.typeId,
+      selectedCategoryId: post?.categoryId,
+      selectedSeriesId: post?.seriesId,
+      selectedCountryId: post?.countryId,
+      imageUrls: post?.imageUrls ?? [],
+      types: const [],
+      categories: const [],
+      series: const [],
+      countries: const [],
     );
   }
 
@@ -70,6 +74,7 @@ class CreatePostFormState extends Equatable {
     List<CountryEntity>? countries,
   }) {
     return CreatePostFormState(
+      post: post,
       title: title ?? this.title,
       description: description ?? this.description,
       inStock: inStock ?? this.inStock,
@@ -88,6 +93,7 @@ class CreatePostFormState extends Equatable {
 
   @override
   List<Object?> get props => [
+    post,
     title,
     description,
     inStock,

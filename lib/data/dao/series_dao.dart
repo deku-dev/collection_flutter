@@ -15,6 +15,9 @@ abstract class SeriesDao{
   @Query('SELECT * FROM SeriesEntity WHERE id = :id')
   Future<SeriesEntity?> findSeriesById(int id);
 
+  @Query('SELECT * FROM SeriesEntity WHERE name = :name')
+  Future<SeriesEntity?> findByName(String name);
+
   @update
   Future<void> updateItem(SeriesEntity series);
 

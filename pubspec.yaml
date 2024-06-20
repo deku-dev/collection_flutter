@@ -51,6 +51,17 @@ dependencies:
   equatable: ^2.0.0
   shared_preferences: ^2.2.3
   provider: ^6.1.2
+  crypto: ^3.0.3
+  sqflite_sqlcipher: ^3.1.0+1
+  http: ^1.2.1
+  apillon_flutter: ^0.0.1
+  web3dart: ^2.7.3
+  flutter_secure_storage: ^9.2.2
+  local_auth: ^2.2.0
+  bip39: ^1.0.6
+  ed25519_hd_key: ^2.2.1
+  encrypt: ^5.0.1
+  hex: ^0.2.0
 
 dev_dependencies:
   flutter_test:

@@ -16,6 +16,9 @@ abstract class CategoryDao {
   @Query('SELECT * FROM CategoryEntity WHERE id = :id')
   Future<CategoryEntity?> findCategoryById(int id);
 
+  @Query('SELECT * FROM CategoryEntity WHERE name = :name')
+  Future<CategoryEntity?> findByName(String name);
+
   @update
   Future<void> updateItem(CategoryEntity category);
 

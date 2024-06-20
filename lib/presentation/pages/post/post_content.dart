@@ -14,62 +14,64 @@ class PostContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TappableImage(imageUrl: post.firstImage),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                post.title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TappableImage(imageUrl: post.firstImage),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  post.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8.0),
-              Text(
-                post.description ?? 'No description',
-                style: const TextStyle(fontSize: 16.0),
-              ),
-              const SizedBox(height: 16.0),
-              FutureDataWidget(
-                future: post.getCategory(),
-                builder: (data) => Text(
-                  'Category: ${data?.name}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                const SizedBox(height: 8.0),
+                Text(
+                  post.description ?? 'No description',
+                  style: const TextStyle(fontSize: 16.0),
                 ),
-                loadingWidget: const CircularProgressIndicator(),
-                errorWidget: (error) => Text('Error: $error'),
-                emptyWidget: const Text('No category found'),
-              ),
-              FutureDataWidget(
-                future: post.getSeries(),
-                builder: (data) => Text(
-                  'Series: ${data?.name}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                const SizedBox(height: 16.0),
+                FutureDataWidget(
+                  future: post.getCategory(),
+                  builder: (data) => Text(
+                    'Category: ${data?.name}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  loadingWidget: const CircularProgressIndicator(),
+                  errorWidget: (error) => Text('Error: $error'),
+                  emptyWidget: const Text('No category found'),
                 ),
-                loadingWidget: const CircularProgressIndicator(),
-                errorWidget: (error) => Text('Error: $error'),
-                emptyWidget: const Text('No series found'),
-              ),
-              FutureDataWidget(
-                future: post.getType(),
-                builder: (data) => Text(
-                  'Type: ${data?.name}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                FutureDataWidget(
+                  future: post.getSeries(),
+                  builder: (data) => Text(
+                    'Series: ${data?.name}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  loadingWidget: const CircularProgressIndicator(),
+                  errorWidget: (error) => Text('Error: $error'),
+                  emptyWidget: const Text('No series found'),
                 ),
-                loadingWidget: const CircularProgressIndicator(),
-                errorWidget: (error) => Text('Error: $error'),
-                emptyWidget: const Text('No type found'),
-              ),
-            ],
+                FutureDataWidget(
+                  future: post.getType(),
+                  builder: (data) => Text(
+                    'Author: ${data?.name}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  loadingWidget: const CircularProgressIndicator(),
+                  errorWidget: (error) => Text('Error: $error'),
+                  emptyWidget: const Text('No author found'),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -164,7 +166,9 @@ class ImageGallery extends StatelessWidget {
         scrollPhysics: const BouncingScrollPhysics(),
         builder: (BuildContext context, int index) {
           return PhotoViewGalleryPageOptions(
-            imageProvider: FileImage(File(images[index])),
+            imageProvider: isLocal
+                ? FileImage(File(images[index]))
+                : NetworkImage(images[index]) as ImageProvider,
             initialScale: PhotoViewComputedScale.contained * 0.8,
             heroAttributes: PhotoViewHeroAttributes(tag: index),
             errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {

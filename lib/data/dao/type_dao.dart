@@ -15,6 +15,9 @@ abstract class TypeDao {
   @Query('SELECT * FROM TypeEntity WHERE id = :id')
   Future<TypeEntity?> findTypeById(int id);
 
+  @Query('SELECT * FROM TypeEntity WHERE name = :name')
+  Future<TypeEntity?> findByName(String name);
+
   @update
   Future<void> updateItem(TypeEntity type);
 

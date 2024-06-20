@@ -15,6 +15,9 @@ abstract class CountryDao {
   @Query('SELECT * FROM CountryEntity WHERE id = :id')
   Future<CountryEntity?> findCountryById(int id);
 
+  @Query('SELECT * FROM CountryEntity WHERE name = :name')
+  Future<CountryEntity?> findByName(String name);
+
   @update
   Future<void> updateItem(CountryEntity post);
 

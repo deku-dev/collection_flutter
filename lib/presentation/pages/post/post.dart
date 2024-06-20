@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 
 import '../../../data/database/database.dart';
+import '../../routes.dart';
 import '../home/home_cubit.dart';
 
 class PostPage extends StatefulWidget {
@@ -45,6 +46,13 @@ class _PostPageState extends State<PostPage> {
                 ),
               ),
               const PopupMenuItem(
+                value: 'create_nft',
+                child: Text(
+                  'Create NFT',
+                  style: TextStyle(color: Colors.black), // Customize the text color
+                ),
+              ),
+              const PopupMenuItem(
                 value: 'delete',
                 child: Text(
                   'Delete',
@@ -54,9 +62,11 @@ class _PostPageState extends State<PostPage> {
             ],
             onSelected: (value) {
               if (value == 'edit') {
-                // Handle edit action
+                QR.toName(AppRoutes.editPostPage, params: {'id': widget.postId});
               } else if (value == 'delete') {
                 _showDeleteConfirmationDialog();
+              } else if (value == 'create_nft') {
+                _createNFT(post as PostEntity);
               }
             },
           ),
@@ -105,6 +115,10 @@ class _PostPageState extends State<PostPage> {
         );
       },
     );
+  }
+
+  void _createNFT(PostEntity post) {
+
   }
 
   Future<void> _deletePost() async {

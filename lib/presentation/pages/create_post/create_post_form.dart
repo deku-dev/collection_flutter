@@ -3,24 +3,77 @@ import 'package:Collectioneer/presentation/pages/create_post/widgets/select_choi
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:qlevar_router/qlevar_router.dart';
 
+import '../../../data/database/database.dart';
+import '../../../domain/entities/post_entity.dart';
 import 'create_post_cubit.dart';
 import 'create_post_state.dart';
 
 class CreatePostFormPage extends StatelessWidget {
-  const CreatePostFormPage({super.key});
+
+  CreatePostFormPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CreatePostFormCubit(),
-      child: const _CreatePostFormContent(),
-    );
+    int? postId;
+    if (QR.params.isNotEmpty) {
+      postId = QR.params['id']!.asInt!;
+    }
+
+    if (QR.params.isNotEmpty && postId != null) {
+      return FutureBuilder<PostEntity?>(
+        future: GetIt.instance<AppDatabase>().postDao.findPostById(postId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Loading Post...'),
+              ),
+              body: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Error'),
+              ),
+              body: Center(
+                child: Text('Error loading post: ${snapshot.error}'),
+              ),
+            );
+          } else if (!snapshot.hasData || snapshot.data == null) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Post Not Found'),
+              ),
+              body: Center(
+                child: Text('Post with ID $postId not found.'),
+              ),
+            );
+          } else {
+            // Post found, pass it to BlocProvider and render form content
+            return BlocProvider(
+              create: (context) => CreatePostFormCubit(snapshot.data!),
+              child: _CreatePostFormContent(),
+            );
+          }
+        },
+      );
+    } else {
+      return BlocProvider(
+        create: (context) => CreatePostFormCubit(null),
+        child: _CreatePostFormContent(),
+      );
+    }
+
   }
 }
 
 class _CreatePostFormContent extends StatefulWidget {
-  const _CreatePostFormContent();
+  _CreatePostFormContent();
 
   @override
   __CreatePostFormContentState createState() => __CreatePostFormContentState();
@@ -28,6 +81,7 @@ class _CreatePostFormContent extends StatefulWidget {
 
 class __CreatePostFormContentState extends State<_CreatePostFormContent> {
   final _formKey = GlobalKey<FormState>();
+  late Future<PostEntity?> post;
 
   @override
   void initState() {
@@ -37,6 +91,11 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
     cubit.updateCategories();
     cubit.updateSeries();
     cubit.updateCountries();
+
+
+    if (cubit.state.post != null) {
+      cubit.loadPostData();
+    }
   }
 
   @override
@@ -45,7 +104,7 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Create Post'),
+            title: Text(state.post == null ? 'Create Post' : 'Edit Post'),
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -56,6 +115,7 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     MultipleImageField(
+                      initialImages: state.imageUrls,
                       onImagesSelected: (imagePaths) {
                         context.read<CreatePostFormCubit>().updateImagePaths(imagePaths);
                       },
@@ -65,6 +125,7 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
+                      initialValue: state.title,
                       decoration: InputDecoration(
                         labelText: 'Title',
                         labelStyle: const TextStyle(color: Colors.blueGrey),
@@ -84,6 +145,7 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
+                      initialValue: state.description,
                       decoration: InputDecoration(
                         labelText: 'Description',
                         labelStyle: const TextStyle(color: Colors.blueGrey),
@@ -104,6 +166,7 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
+                      initialValue: state.year?.toString(),
                       decoration: InputDecoration(
                         labelText: 'Enter a Year (YYYY)',
                         labelStyle: TextStyle(color: Colors.blueGrey),
@@ -138,9 +201,9 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                       onChanged: (value) {
                         context.read<CreatePostFormCubit>().updateSelectedType(value!);
                       },
-                      hintText: "Select a type",
+                      hintText: "Select a author",
                       showCustomItem: true,
-                      searchHintText: "Search types...",
+                      searchHintText: "Search authors...",
                       inputString: '',
                       addItem: (String name) async {
                         await context.read<CreatePostFormCubit>().addType(name);
@@ -227,7 +290,7 @@ class __CreatePostFormContentState extends State<_CreatePostFormContent> {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
-                        child: const Text('Create Post', style: TextStyle(fontSize: 16.0)),
+                        child: const Text('Submit', style: TextStyle(fontSize: 16.0)),
                       ),
                     ),
                   ],

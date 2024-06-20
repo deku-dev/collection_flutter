@@ -2,6 +2,7 @@ import 'package:Collectioneer/presentation/pages/category/category_page.dart';
 import 'package:Collectioneer/presentation/pages/create_post/create_post_form.dart';
 import 'package:Collectioneer/presentation/pages/home/home_cubit.dart';
 import 'package:Collectioneer/presentation/pages/home/home_page.dart';
+import 'package:Collectioneer/presentation/pages/login/login_page.dart';
 import 'package:Collectioneer/presentation/pages/not_found_page.dart';
 import 'package:Collectioneer/presentation/pages/post/post.dart';
 import 'package:Collectioneer/presentation/pages/settings/settings.dart';
@@ -16,6 +17,8 @@ class AppRoutes {
   static const String postPage = 'Post Page';
   static const String createPostPage = 'Create Post Page';
   static const String categoryPage = 'Category Page';
+  static const String editPostPage = 'Edit Post Page';
+  static const String loginPage = 'Login Page';
 
   final TeaserPostsCubit teaserPostsCubit;
 
@@ -35,8 +38,10 @@ class AppRoutes {
         child: PostPage(teaserPostsCubit: teaserPostsCubit),
       ),
     ),
-    QRoute(name: createPostPage, path: '/create-post', builder: () => const CreatePostFormPage()),
+    QRoute(name: createPostPage, path: '/create-post', builder: () => CreatePostFormPage()),
     QRoute(name: settingsPage, path: '/settings', builder: () => const SettingsPage()),
     QRoute(name: categoryPage, path: '/category/:id', builder: () => CategoryPage()),
+    QRoute(name: editPostPage, path: '/post-edit/:id', builder: () => CreatePostFormPage()),
+    QRoute(name: loginPage, path: '/login', builder: () => LoginPage())
   ];
 }

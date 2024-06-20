@@ -8,12 +8,16 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 class MultipleImageField extends StatefulWidget {
+  final List<String>? initialImages;
   final Function(List<String>) onImagesSelected;
   final Function(String) onImagesDeleted;
 
-  const MultipleImageField(
-      {Key? key, required this.onImagesSelected, required this.onImagesDeleted})
-      : super(key: key);
+  const MultipleImageField({
+    Key? key,
+    this.initialImages,
+    required this.onImagesSelected,
+    required this.onImagesDeleted,
+  }) : super(key: key);
 
   @override
   State<MultipleImageField> createState() => _MultipleImageFieldState();
@@ -23,6 +27,14 @@ class _MultipleImageFieldState extends State<MultipleImageField> {
   List<String> _imagePaths = [];
 
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialImages != null) {
+      _imagePaths = List.from(widget.initialImages!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +111,8 @@ class _MultipleImageFieldState extends State<MultipleImageField> {
     );
 
     List<String> savedPaths = await Future.wait(
-        pickedFiles.map((xFile) => _saveImageToLocalStorage(xFile)).toList());
+      pickedFiles.map((xFile) => _saveImageToLocalStorage(xFile)).toList(),
+    );
 
     setState(() {
       _imagePaths.addAll(savedPaths);
